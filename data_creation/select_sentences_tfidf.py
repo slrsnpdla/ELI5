@@ -62,6 +62,8 @@ def main():
     parser  = argparse.ArgumentParser(description='Gather into train, valid and test')
     parser.add_argument('-sid', '--slice_id', default=0, type=int, metavar='N',
                         help='slice to process')
+    parser.add_argument('-ssid', '--sub_slice_id', default=0, type=int, metavar='N',
+                        help='slice to process')
     parser.add_argument('-ns', '--num_selected', default=15, type=int, metavar='N',
                         help='number of selected passages')
     parser.add_argument('-nc', '--num_context', default=3, type=int, metavar='N',
@@ -71,12 +73,15 @@ def main():
     args        = parser.parse_args()
     reddit      = args.subreddit_name
     n_slice     = args.slice_id
+    n_sslice = args.sub_slice_id
     n_sents     = args.num_selected
     n_context   = args.num_context
-    if isfile("processed_data/collected_docs/%s/slices/slice_%d.json" % (reddit, n_slice)):
+
+    fname = "processed_data/collected_docs/%s/%s/docs_slice_000%d.json" % (reddit, n_sslice, n_slice)
+    if isfile(fname):
         print("loading data", reddit, n_slice)
         qa_data     = dict(json.load(open("processed_data/%s_qalist.json" % (reddit,))))
-        docs_slice  = json.load(open("processed_data/collected_docs/%s/slices/slice_%d.json" % (reddit, n_slice)))
+        docs_slice  = json.load(open(fname))
         word_counts = json.load(open("pre_computed/%s_unigram_counts.json" % (reddit,)))
         qt_freqs    = dict(word_counts['question_title'])
         qt_sum      = sum(qt_freqs.values())
