@@ -77,7 +77,7 @@ def main():
     n_sents     = args.num_selected
     n_context   = args.num_context
 
-    fname = "processed_data/collected_docs/%s/%s/docs_slice_000%d.json" % (reddit, n_sslice, n_slice)
+    fname = "processed_data/collected_docs/%s/%s/docs_slice_%05d.json" % (reddit, n_sslice, n_slice)
     if isfile(fname):
         print("loading data", reddit, n_slice)
         qa_data     = dict(json.load(open("processed_data/%s_qalist.json" % (reddit,))))
@@ -92,6 +92,9 @@ def main():
         print("loaded data")
         processed   = []
         st_time = time()
+        import random
+        random_idx = random.randint(0, len(docs_slice)-1)
+        print('[sample]', docs_slice[random_idx])
         for i, (k, docs_list) in enumerate(docs_slice):
             if k in qa_data:
                 processed   += [make_example(qa_data[k], docs_list, word_freqs, n_sents, n_context)]
