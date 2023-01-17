@@ -62,8 +62,6 @@ def main():
     parser  = argparse.ArgumentParser(description='Gather into train, valid and test')
     parser.add_argument('-sid', '--slice_id', default=0, type=int, metavar='N',
                         help='slice to process')
-    parser.add_argument('-ssid', '--sub_slice_id', default=0, type=int, metavar='N',
-                        help='slice to process')
     parser.add_argument('-ns', '--num_selected', default=15, type=int, metavar='N',
                         help='number of selected passages')
     parser.add_argument('-nc', '--num_context', default=3, type=int, metavar='N',
@@ -73,15 +71,12 @@ def main():
     args        = parser.parse_args()
     reddit      = args.subreddit_name
     n_slice     = args.slice_id
-    n_sslice = args.sub_slice_id
     n_sents     = args.num_selected
     n_context   = args.num_context
-
-    fname = "processed_data/collected_docs/%s/%s/docs_slice_%05d.json" % (reddit, n_sslice, n_slice)
-    if isfile(fname):
+    if isfile("processed_data/collected_docs/%s/slices/slice_%d.json" % (reddit, n_slice)):
         print("loading data", reddit, n_slice)
         qa_data     = dict(json.load(open("processed_data/%s_qalist.json" % (reddit,))))
-        docs_slice  = json.load(open(fname))
+        docs_slice  = json.load(open("processed_data/collected_docs/%s/slices/slice_%d.json" % (reddit, n_slice)))
         word_counts = json.load(open("pre_computed/%s_unigram_counts.json" % (reddit,)))
         qt_freqs    = dict(word_counts['question_title'])
         qt_sum      = sum(qt_freqs.values())
@@ -92,9 +87,6 @@ def main():
         print("loaded data")
         processed   = []
         st_time = time()
-        import random
-        random_idx = random.randint(0, len(docs_slice)-1)
-        print('[sample]', docs_slice[random_idx])
         for i, (k, docs_list) in enumerate(docs_slice):
             if k in qa_data:
                 processed   += [make_example(qa_data[k], docs_list, word_freqs, n_sents, n_context)]
